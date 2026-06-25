@@ -38,20 +38,20 @@ Our curation pipeline is powered by a structured state machine graph using **Lan
 ```mermaid
 graph TD
     %% Define Nodes
-    A[<b>RSS Feeds</b><br>Parse multiple sources]
-    B(<b>Fetch Node</b><br>Gathers recent stories)
-    C(<b>History Filter</b><br>Removes already-sent URLs)
-    D(<b>LLM Selector Node</b><br>Multi-model curation)
-    E(<b>Cross-Dedup Node</b><br>Fuzzy title similarity)
+    A["RSS Feeds\nParse multiple sources"]
+    B("Fetch Node\nGathers recent stories")
+    C("History Filter\nRemoves already-sent URLs")
+    D("LLM Selector Node\nMulti-model curation")
+    E("Cross-Dedup Node\nFuzzy title similarity")
     
     %% Human-in-the-Loop checkpoint
-    F{<b>Interactive Mode?</b>}
-    G[<b>Draft Approval</b><br>Human reviews draft.json]
+    F{"Interactive Mode?"}
+    G["Draft Approval\nHuman reviews draft.json"]
     
-    H(<b>Sports Node</b><br>Inject CricAPI & Football data)
-    I(<b>Narration Node</b><br>Category-specific LLM rewrite)
-    J(<b>Formatting Node</b><br>Stitches final layout)
-    K[<b>SMTP Delivery</b><br>Premium HTML email sent]
+    H("Sports Node\nInject CricAPI & Football data")
+    I("Narration Node\nCategory-specific LLM rewrite")
+    J("Formatting Node\nStitches final layout")
+    K["SMTP Delivery\nPremium HTML email sent"]
 
     %% Define flow
     A --> B
