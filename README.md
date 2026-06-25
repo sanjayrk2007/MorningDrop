@@ -37,37 +37,33 @@ Our curation pipeline is powered by a structured state machine graph using **Lan
 
 ```mermaid
 graph TD
-    %% Define Nodes
-    A["RSS Feeds\nParse multiple sources"]
-    B("Fetch Node\nGathers recent stories")
-    C("History Filter\nRemoves already-sent URLs")
-    D("LLM Selector Node\nMulti-model curation")
-    E("Cross-Dedup Node\nFuzzy title similarity")
-    
-    %% Human-in-the-Loop checkpoint
-    F{"Interactive Mode?"}
-    G["Draft Approval\nHuman reviews draft.json"]
-    
-    H("Sports Node\nInject CricAPI & Football data")
-    I("Narration Node\nCategory-specific LLM rewrite")
-    J("Formatting Node\nStitches final layout")
-    K["SMTP Delivery\nPremium HTML email sent"]
+    A["📡 RSS Feeds<br/>Parse multiple sources"]
+    B["⬇️ Fetch Node<br/>Gathers recent stories"]
+    C["🗑️ History Filter<br/>Removes already-sent URLs"]
+    D["🧠 LLM Selector Node<br/>Multi-model curation"]
+    E["🔁 Cross-Dedup Node<br/>Fuzzy title similarity"]
+    F{"🔀 Interactive Mode?"}
+    G["✋ Draft Approval<br/>Human reviews draft.json"]
+    H["🏏 Sports Node<br/>Inject CricAPI & Football data"]
+    I["✍️ Narration Node<br/>Category-specific LLM rewrite"]
+    J["🎨 Formatting Node<br/>Stitches final layout"]
+    K["📧 SMTP Delivery<br/>Premium HTML email sent"]
 
-    %% Define flow
-    A --> B
-    B --> C
-    C --> D
-    D --> E
-    E --> F
-    
-    %% Branches
-    F -- Phase 1 / Manual --> G
-    G -- Phase 2 / --approve --> H
-    F -- Auto Mode / --auto --> H
-    
-    H --> I
-    I --> J
-    J --> K
+    A --> B --> C --> D --> E --> F
+    F -- "Phase 1: Manual" --> G
+    G -- "Phase 2: approve" --> H
+    F -- "Auto Mode: auto" --> H
+    H --> I --> J --> K
+
+    classDef fetchStyle fill:#FFE8CC,stroke:#FF9F45,color:#7A4100,stroke-width:2px;
+    classDef curateStyle fill:#D6E8FF,stroke:#4D8FE3,color:#0B3D7A,stroke-width:2px;
+    classDef humanStyle fill:#FFD9E8,stroke:#E35C95,color:#7A0B3D,stroke-width:2px;
+    classDef deliverStyle fill:#D9F7E3,stroke:#36B37E,color:#0B4D2E,stroke-width:2px;
+
+    class A,B,C fetchStyle;
+    class D,E curateStyle;
+    class F,G humanStyle;
+    class H,I,J,K deliverStyle;
 ```
 
 ### 🤖 Supported Curation Models
