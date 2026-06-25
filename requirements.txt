@@ -11,4 +11,4 @@ pytrends
 requests
 deepeval
 pytest
-
+psycopg2-binary>=2.9.0
