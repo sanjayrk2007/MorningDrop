@@ -16,7 +16,6 @@ ENV/
 /morning-bot/
 
 # Databases
-news.db
 news.db-journal
 
 # Local transient app files
