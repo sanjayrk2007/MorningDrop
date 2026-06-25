@@ -1,0 +1,59 @@
+recipient_email: "rksanjayaanand@gmail.com"
+domains:
+  - name: "India"
+    emoji: "🇮🇳"
+    target_stories: 3
+    feeds:
+      - "https://www.thehindu.com/news/national/feeder/default.rss"
+      - "https://indianexpress.com/feed/"
+
+  - name: "TamilNadu"
+    emoji: "🌴"
+    target_stories: 2
+    feeds:
+      - "https://www.thehindu.com/news/national/tamil-nadu/feeder/default.rss"
+
+  - name: "World in 60 Seconds"
+    emoji: "🌍"
+    target_stories: 2
+    feeds:
+      - "http://feeds.bbci.co.uk/news/world/rss.xml"
+      - "https://rss.nytimes.com/services/xml/rss/nyt/World.xml"
+
+  - name: "Money & Jobs"
+    emoji: "💸"
+    target_stories: 3
+    feeds:
+      - "https://www.livemint.com/rss/markets"
+      - "https://www.livemint.com/rss/companies"
+      - "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms"
+
+  - name: "Tech & AI"
+    emoji: "💻"
+    target_stories: 3
+    feeds:
+      - "https://techcrunch.com/feed/"
+      - "https://www.theverge.com/rss/index.xml"
+      - "https://www.wired.com/feed/rss"
+
+  - name: "Sports"
+    emoji: "🏅"
+    target_stories: 3
+    feeds:
+      - "http://www.espncricinfo.com/rss/content/story/feeds/0.xml"
+      - "https://feeds.bbci.co.uk/sport/cricket/rss.xml"
+      - "http://feeds.bbci.co.uk/sport/football/rss.xml"
+
+  - name: "Entertainment"
+    emoji: "🍿"
+    target_stories: 2
+    feeds:
+      - "https://variety.com/feed/"
+      - "https://timesofindia.indiatimes.com/rssfeeds/1081479906.cms"
+
+  - name: "WTF of the Day"
+    emoji: "🤯"
+    target_stories: 1
+    feeds:
+      - "https://www.vice.com/en/rss"
+      - "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml"

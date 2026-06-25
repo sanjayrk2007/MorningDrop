@@ -1,0 +1,35 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+# Explicitly ignore the virtual environment subdirectory named 'morning-bot'
+/morning-bot/
+
+# Databases
+news.db
+news.db-journal
+
+# Local transient app files
+draft.json
+preview.html
+logs/
+
+# Test/Validation Cache
+.deepeval/
+.pytest_cache/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo

@@ -1,0 +1,14 @@
+langgraph
+langchain-openrouter
+langchain-core
+feedparser
+python-dotenv
+PyYAML
+pydantic
+beautifulsoup4
+markdown
+pytrends
+requests
+deepeval
+pytest
+
