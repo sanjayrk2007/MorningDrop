@@ -2,8 +2,9 @@ name: Daily Morning Drop Curation
 
 on:
   schedule:
-    # 1:30 AM UTC is 7:00 AM IST (IST is UTC +5:30)
-    - cron: '30 1 * * *'
+    # 11:30 PM UTC (previous day) is 5:00 AM IST (IST is UTC +5:30)
+    # Shifting earlier to account for GitHub Actions schedule trigger delays
+    - cron: '30 23 * * *'
   workflow_dispatch: # Allows manual trigger from the GitHub Actions tab
 
 jobs:
