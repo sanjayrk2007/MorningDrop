@@ -71,18 +71,21 @@ def curation_node(state: GraphState) -> Dict[str, Any]:
     curated_articles = []
 
     models_to_try = [
-        "deepseek/deepseek-chat",
+        # Free OpenRouter models
         "meta-llama/llama-3.3-70b-instruct:free",
         "meta-llama/llama-3-8b-instruct:free",
-        "meta-llama/llama-3-8b-instruct",
         "openai/gpt-oss-120b:free",
-        "openai/gpt-oss-120b",
         "google/gemma-4-31b-it:free",
-        "google/gemma-4-31b-it",
-        "nvidia/llama-3.1-nemotron-70b-instruct",
+        "mistralai/mistral-7b-instruct:free",
+        # Local Ollama fallback models
+        "ollama/qwen2.5:3b",
+        "ollama/llama3.1",
+        "ollama/llama3",
+        "ollama/gemma2",
+        # Paid models (optional last resort)
+        "deepseek/deepseek-chat",
         "google/gemini-flash-1.5",
-        "google/gemini-pro-1.5",
-        "mistralai/mistral-7b-instruct:free"
+        "google/gemini-pro-1.5"
     ]
 
     for domain in config.app_config.domains:
@@ -109,14 +112,27 @@ def curation_node(state: GraphState) -> Dict[str, Any]:
 
         selected_indices = None
 
-        for model_name in models_to_try:
+        # Filter out OpenRouter models if API key is not configured
+        active_models = models_to_try
+        if not config.openrouter_api_key:
+            active_models = [m for m in models_to_try if m.startswith("ollama/")]
+
+        for model_name in active_models:
             try:
                 print(f"   Curating {domain.name} using {model_name}...")
-                llm = ChatOpenRouter(
-                    model_name=model_name,
-                    openrouter_api_key=config.openrouter_api_key,
-                    max_retries=1
-                )
+                if model_name.startswith("ollama/"):
+                    from langchain_ollama import ChatOllama
+                    local_model = model_name.split("/", 1)[1]
+                    llm = ChatOllama(
+                        model=local_model,
+                        temperature=0.1
+                    )
+                else:
+                    llm = ChatOpenRouter(
+                        model_name=model_name,
+                        openrouter_api_key=config.openrouter_api_key,
+                        max_retries=1
+                    )
                 response = llm.invoke([
                     SystemMessage(content=system_prompt),
                     HumanMessage(content=articles_text)
@@ -331,18 +347,21 @@ def analyze_and_narrate_node(state: GraphState) -> Dict[str, Any]:
     domain_briefings = {}
 
     models_to_try = [
-        "deepseek/deepseek-chat",
+        # Free OpenRouter models
         "meta-llama/llama-3.3-70b-instruct:free",
         "meta-llama/llama-3-8b-instruct:free",
-        "meta-llama/llama-3-8b-instruct",
         "openai/gpt-oss-120b:free",
-        "openai/gpt-oss-120b",
         "google/gemma-4-31b-it:free",
-        "google/gemma-4-31b-it",
-        "nvidia/llama-3.1-nemotron-70b-instruct",
+        "mistralai/mistral-7b-instruct:free",
+        # Local Ollama fallback models
+        "ollama/qwen2.5:3b",
+        "ollama/llama3.1",
+        "ollama/llama3",
+        "ollama/gemma2",
+        # Paid models (optional last resort)
+        "deepseek/deepseek-chat",
         "google/gemini-flash-1.5",
-        "google/gemini-pro-1.5",
-        "mistralai/mistral-7b-instruct:free"
+        "google/gemini-pro-1.5"
     ]
 
     # Group articles by domain
@@ -366,14 +385,28 @@ def analyze_and_narrate_node(state: GraphState) -> Dict[str, Any]:
         ])
 
         response_content = None
-        for model_name in models_to_try:
+
+        # Filter out OpenRouter models if API key is not configured
+        active_models = models_to_try
+        if not config.openrouter_api_key:
+            active_models = [m for m in models_to_try if m.startswith("ollama/")]
+
+        for model_name in active_models:
             try:
                 print(f"   Trying model {model_name} for {domain}...")
-                llm = ChatOpenRouter(
-                    model_name=model_name,
-                    openrouter_api_key=config.openrouter_api_key,
-                    max_retries=1
-                )
+                if model_name.startswith("ollama/"):
+                    from langchain_ollama import ChatOllama
+                    local_model = model_name.split("/", 1)[1]
+                    llm = ChatOllama(
+                        model=local_model,
+                        temperature=0.7
+                    )
+                else:
+                    llm = ChatOpenRouter(
+                        model_name=model_name,
+                        openrouter_api_key=config.openrouter_api_key,
+                        max_retries=1
+                    )
                 response = llm.invoke([
                     SystemMessage(content=system_prompt),
                     HumanMessage(content=f"Here are today's articles for {domain}:\n{articles_text}")

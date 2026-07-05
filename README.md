@@ -55,10 +55,10 @@ graph TD
     F -- "Auto Mode: auto" --> H
     H --> I --> J --> K
 
-    classDef fetchStyle fill:#FFE8CC,stroke:#FF9F45,color:#7A4100,stroke-width:2px;
-    classDef curateStyle fill:#D6E8FF,stroke:#4D8FE3,color:#0B3D7A,stroke-width:2px;
-    classDef humanStyle fill:#FFD9E8,stroke:#E35C95,color:#7A0B3D,stroke-width:2px;
-    classDef deliverStyle fill:#D9F7E3,stroke:#36B37E,color:#0B4D2E,stroke-width:2px;
+    classDef fetchStyle fill:#F3E5F5,stroke:#8E24AA,color:#4A148C,stroke-width:2px;
+    classDef curateStyle fill:#E0F2F1,stroke:#00897B,color:#004D40,stroke-width:2px;
+    classDef humanStyle fill:#FFEBEE,stroke:#E53935,color:#B71C1C,stroke-width:2px;
+    classDef deliverStyle fill:#E8F5E9,stroke:#43A047,color:#1B5E20,stroke-width:2px;
 
     class A,B,C fetchStyle;
     class D,E curateStyle;
@@ -66,14 +66,23 @@ graph TD
     class H,I,J,K deliverStyle;
 ```
 
-### 🤖 Supported Curation Models
+### 🤖 Dual LLM Engines & Fallback Architecture
 
-To ensure high curation quality and robust fallback redundancy, the pipeline queries models via OpenRouter in this preferred order:
-1. **DeepSeek-V3** (`deepseek/deepseek-chat`) — Primary high-performance curator
-2. **Llama 3.3 70B & Llama 3 8B** (`meta-llama/llama-3.3-70b-instruct:free`, `meta-llama/llama-3-8b-instruct` (paid/free)) — Extremely conversational and robust
-3. **GPT-OSS-120B** (`openai/gpt-oss-120b:free` / `openai/gpt-oss-120b`) — OpenAI's high-reasoning open-weights model
-4. **Google Gemma 4 31B** (`google/gemma-4-31b-it:free` / `google/gemma-4-31b-it`) — State-of-the-art reasoning model
-5. **Fallback Cluster** — `llama-3.1-nemotron-70b-instruct`, `gemini-flash-1.5`, `gemini-pro-1.5`, and `mistral-7b-instruct:free`
+To ensure high curation quality, 100% uptime, and cost-free execution, the pipeline utilizes a dual-engine LLM orchestration system that falls back automatically:
+
+#### 1. Cloud Engine (OpenRouter)
+Queries models in this preferred order:
+* **DeepSeek-V3** (`deepseek/deepseek-chat`) — Primary high-performance curator
+* **Llama 3.3 70B & Llama 3 8B** (`meta-llama/llama-3.3-70b-instruct:free`, `meta-llama/llama-3-8b-instruct:free`) — Extremely conversational and robust
+* **GPT-OSS-120B** (`openai/gpt-oss-120b:free`) — High-reasoning open-weights model
+* **Google Gemma 4 31B** (`google/gemma-4-31b-it:free`) — State-of-the-art reasoning model
+* **Fallback Cluster** — `gemini-flash-1.5`, `gemini-pro-1.5`, and `mistral-7b-instruct:free`
+
+#### 2. Local Backup Engine (Ollama)
+If OpenRouter hits rate limits (429 errors), lacks credit, or if `OPENROUTER_API_KEY` is not provided in `.env`, the system automatically shifts execution to local Ollama models:
+* **Qwen 2.5 3B** (`ollama/qwen2.5:3b`) — Lightweight, extremely fast local fallback
+* **Llama 3.1 & Llama 3** (`ollama/llama3.1`, `ollama/llama3`) — High-quality local narration and structure
+* **Gemma 2** (`ollama/gemma2`) — Local backup model
 
 ---
 
@@ -113,21 +122,57 @@ The newsletter is split into distinct categories, each styled with unique accent
 
 ## 🛠️ Quick Launch Guide
 
-### 1. Register Automation (7:00 AM Daily)
+### 1. Project Environment Setup
+Set up your Python virtual environment and install dependencies:
+```bash
+# Create virtual environment
+python3 -m venv .venv
+
+# Activate virtual environment
+source .venv/bin/activate
+
+# Install dependencies (includes langchain-ollama)
+pip install -r requirements.txt
+```
+
+### 2. Configure Environment Secrets
+Create a `.env` file in the root directory:
+```env
+# Optional: OpenRouter API Key (Ollama will be used directly if left empty)
+OPENROUTER_API_KEY=your_key_here
+
+# Required: Gmail Credentials for SMTP delivery
+GMAIL_ADDRESS=your_gmail@gmail.com
+GMAIL_APP_PASSWORD=your_app_specific_password
+```
+
+### 3. Local Ollama Pre-requisites (Optional)
+If you plan to run offline or use Ollama for free fallback, make sure Ollama is running and download your backup model:
+```bash
+# Pull the qwen or llama models
+ollama pull qwen2.5:3b
+ollama pull llama3.1
+```
+
+### 4. Running the Curation Pipeline
+* **Manual Mode (Human-in-the-Loop review)**:
+  ```bash
+  # Phase 1: Fetch and save curated stories to draft.json
+  python main.py --draft
+
+  # [Review and edit draft.json to remove unwanted stories]
+
+  # Phase 2: Generate narration and deliver the email
+  python main.py --approve
+  ```
+* **Auto Mode**:
+  ```bash
+  python main.py --auto
+  ```
+
+### 5. Register Automation (7:00 AM Daily)
 To run the automated script every morning at 7 AM:
 Open **PowerShell as Administrator** and execute:
 ```powershell
 Set-ExecutionPolicy Bypass -Scope Process -Force; & ".\setup_scheduler.ps1"
-```
-
-### 2. Manual Curation Pipeline (Human-in-the-Loop)
-If you prefer to review what gets sent:
-```bash
-# Phase 1: Fetch and save curated stories to draft.json
-python main.py --draft
-
-# [Review and edit draft.json to remove unwanted stories]
-
-# Phase 2: Generate narration and deliver the email
-python main.py --approve
 ```

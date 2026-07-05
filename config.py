@@ -77,12 +77,15 @@ class Settings(BaseModel):
     The sports API keys are optional — the bot still works without them,
     it just won't have live scores.
     """
-    openrouter_api_key: str       # Key for OpenRouter (accesses multiple LLMs)
+    openrouter_api_key: Optional[str] = None       # Key for OpenRouter (accesses multiple LLMs)
     gmail_address: str            # Your Gmail address (the "From" address)
     gmail_app_password: str       # Gmail App Password (NOT your regular password!)
     app_config: AppConfig         # The full app configuration from config.yaml
     cricapi_key: Optional[str] = None      # Optional: Cricket live scores
     football_api_key: Optional[str] = None # Optional: Football live scores
+    
+    # Custom validator to handle cases when we don't have OpenRouter or Ollama (we'll check later)
+    # but keeping it simple for Pydantic.
 
 
 # ─── LOADER FUNCTION ──────────────────────────────────────────────────────────
@@ -123,8 +126,6 @@ def load_config(config_path: str = "config.yaml") -> Settings:
     # ── Step 2: Validate required keys are present ───────────────────────────
     # If a required key is missing, raise an error with a clear message.
     # `not openrouter_key` is True when the value is None or an empty string "".
-    if not openrouter_key:
-        raise ValueError("OPENROUTER_API_KEY not set in environment or .env file.")
     if not gmail_address or not gmail_app_pwd:
         raise ValueError("GMAIL_ADDRESS or GMAIL_APP_PASSWORD not set in environment or .env file.")
 
