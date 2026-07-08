@@ -136,7 +136,7 @@ def _render_section_card(section: dict) -> str:
     </table>
     """
 
-def format_html_email(briefing_content: str) -> str:
+def format_html_email(briefing_content: str, unsubscribe_link: str = None) -> str:
     """
     Converts the flat text briefing into a premium dark-themed HTML email.
     Uses per-domain card sections with accent color borders.
@@ -148,6 +148,14 @@ def format_html_email(briefing_content: str) -> str:
     cards_html = ""
     for section in sections:
         cards_html += _render_section_card(section)
+
+    unsubscribe_html = ""
+    if unsubscribe_link:
+        unsubscribe_html = f"""
+        <p style="margin-top:12px;font-size:11px;color:#C8B8A8;">
+          Don't want these emails? <a href="{unsubscribe_link}" style="color:#C9845A;text-decoration:underline;">Unsubscribe</a>
+        </p>
+        """
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -353,6 +361,7 @@ def format_html_email(briefing_content: str) -> str:
       <span class="emoji-footer">✨</span>
       <p>That's your morning drop. Go be the most informed person in the room.</p>
       <p style="margin-top:5px;">See you tomorrow — same time, same vibe. 🌸</p>
+      {unsubscribe_html}
       <p class="brand">The Morning Drop &middot; Crafted with ❤️</p>
     </div>
 
@@ -360,9 +369,49 @@ def format_html_email(briefing_content: str) -> str:
 </body>
 </html>"""
 
-def send_email(sender_email: str, app_password: str, recipient_email: str, subject: str, content: str):
-    """Sends the briefing email via Gmail SMTP."""
 
+def send_email(
+    sender_email: str,
+    app_password: str,
+    recipient_email: str,
+    subject: str,
+    content: str,
+    resend_api_key: str = None,
+    unsubscribe_link: str = None
+):
+    """Sends the briefing email. Uses Resend API if key is present, otherwise falls back to Gmail SMTP."""
+
+    if resend_api_key:
+        try:
+            import resend
+            resend.api_key = resend_api_key
+
+            # Format HTML with unsubscribe link
+            html_content = format_html_email(content, unsubscribe_link)
+
+            # Resend requires the "from" address to be verified.
+            # If sender_email is a Gmail address, Resend will reject it unless it's verified.
+            # So, if they are using Resend but haven't updated sender_email to a custom domain,
+            # we default to "The Morning Drop <onboarding@resend.dev>" as the sender.
+            from_address = sender_email
+            if "gmail.com" in sender_email.lower() or "example.com" in sender_email.lower():
+                from_address = "The Morning Drop <onboarding@resend.dev>"
+
+            params = {
+                "from": from_address,
+                "to": [recipient_email],
+                "subject": subject,
+                "html": html_content,
+                "text": content,
+            }
+
+            response = resend.Emails.send(params)
+            print(f"Email successfully sent to {recipient_email} via Resend. ID: {response.get('id')}")
+            return
+        except Exception as e:
+            print(f"[!] Resend delivery failed: {e}. Falling back to Gmail SMTP...")
+
+    # Fallback to SMTP
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
     msg["From"] = sender_email
@@ -370,7 +419,7 @@ def send_email(sender_email: str, app_password: str, recipient_email: str, subje
 
     # Attach both plain text and HTML versions
     part1 = MIMEText(content, "plain")
-    part2 = MIMEText(format_html_email(content), "html")
+    part2 = MIMEText(format_html_email(content, unsubscribe_link), "html")
 
     msg.attach(part1)
     msg.attach(part2)
@@ -379,4 +428,4 @@ def send_email(sender_email: str, app_password: str, recipient_email: str, subje
         server.login(sender_email, app_password)
         server.sendmail(sender_email, recipient_email, msg.as_string())
 
-    print(f"Email successfully sent to {recipient_email}")
+    print(f"Email successfully sent to {recipient_email} via Gmail SMTP")
