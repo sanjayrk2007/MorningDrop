@@ -78,6 +78,7 @@ class Settings(BaseModel):
     it just won't have live scores.
     """
     openrouter_api_key: Optional[str] = None       # Key for OpenRouter (accesses multiple LLMs)
+    google_api_key: Optional[str] = None           # Key for Google Gemini (direct API access)
     gmail_address: str            # Your Gmail address (the "From" address)
     gmail_app_password: str       # Gmail App Password (NOT your regular password!)
     app_config: AppConfig         # The full app configuration from config.yaml
@@ -118,6 +119,7 @@ def load_config(config_path: str = "config.yaml") -> Settings:
     # ── Step 1: Read secrets from environment variables ──────────────────────
     # os.getenv() returns None if the variable isn't set (won't crash).
     openrouter_key   = os.getenv("OPENROUTER_API_KEY")
+    google_key       = os.getenv("GOOGLE_API_KEY")
     gmail_address    = os.getenv("GMAIL_ADDRESS")
     gmail_app_pwd    = os.getenv("GMAIL_APP_PASSWORD")
     cricapi_key      = os.getenv("CRICAPI_KEY")       # Optional — can be None
@@ -146,6 +148,7 @@ def load_config(config_path: str = "config.yaml") -> Settings:
     # ── Step 4: Bundle everything into a Settings object and return ───────────
     return Settings(
         openrouter_api_key=openrouter_key,
+        google_api_key=google_key,
         gmail_address=gmail_address,
         gmail_app_password=gmail_app_pwd,
         app_config=app_config,
