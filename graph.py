@@ -74,6 +74,10 @@ def curation_node(state: GraphState) -> Dict[str, Any]:
     active_models = []
     if config.openrouter_api_key:
         active_models.extend([
+            # Free DeepSeek and Nvidia Nemotron Models (Preferred First)
+            "deepseek/deepseek-r1:free",
+            "nvidia/llama-3.1-nemotron-70b-instruct:free",
+            # Other Free OpenRouter models
             "meta-llama/llama-3.3-70b-instruct:free",
             "meta-llama/llama-3-8b-instruct:free",
             "openai/gpt-oss-120b:free",
@@ -350,6 +354,10 @@ def analyze_and_narrate_node(state: GraphState) -> Dict[str, Any]:
     active_models = []
     if config.openrouter_api_key:
         active_models.extend([
+            # Free DeepSeek and Nvidia Nemotron Models (Preferred First)
+            "deepseek/deepseek-r1:free",
+            "nvidia/llama-3.1-nemotron-70b-instruct:free",
+            # Other Free OpenRouter models
             "meta-llama/llama-3.3-70b-instruct:free",
             "meta-llama/llama-3-8b-instruct:free",
             "openai/gpt-oss-120b:free",
