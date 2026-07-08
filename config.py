@@ -81,9 +81,6 @@ class Settings(BaseModel):
     google_api_key: Optional[str] = None           # Key for Google Gemini (direct API access)
     gmail_address: str            # Your Gmail address (the "From" address)
     gmail_app_password: str       # Gmail App Password (NOT your regular password!)
-    resend_api_key: Optional[str] = None           # Key for Resend bulk email delivery
-    supabase_url: Optional[str] = None             # Supabase project URL
-    supabase_key: Optional[str] = None             # Supabase service role key
     app_config: AppConfig         # The full app configuration from config.yaml
     cricapi_key: Optional[str] = None      # Optional: Cricket live scores
     football_api_key: Optional[str] = None # Optional: Football live scores
@@ -123,9 +120,6 @@ def load_config(config_path: str = "config.yaml") -> Settings:
     # os.getenv() returns None if the variable isn't set (won't crash).
     openrouter_key   = os.getenv("OPENROUTER_API_KEY")
     google_key       = os.getenv("GOOGLE_API_KEY")
-    resend_key       = os.getenv("RESEND_API_KEY")
-    supabase_url     = os.getenv("SUPABASE_URL")
-    supabase_key     = os.getenv("SUPABASE_KEY")
     gmail_address    = os.getenv("GMAIL_ADDRESS")
     gmail_app_pwd    = os.getenv("GMAIL_APP_PASSWORD")
     cricapi_key      = os.getenv("CRICAPI_KEY")       # Optional — can be None
@@ -155,9 +149,6 @@ def load_config(config_path: str = "config.yaml") -> Settings:
     return Settings(
         openrouter_api_key=openrouter_key,
         google_api_key=google_key,
-        resend_api_key=resend_key,
-        supabase_url=supabase_url,
-        supabase_key=supabase_key,
         gmail_address=gmail_address,
         gmail_app_password=gmail_app_pwd,
         app_config=app_config,

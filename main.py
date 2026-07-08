@@ -10,24 +10,6 @@ from db import NewsDatabase
 
 DRAFT_FILE = "draft.json"
 
-def get_subscribers(config) -> list:
-    """Fetches active subscribers from Supabase, or falls back to config recipient."""
-    if config.supabase_url and config.supabase_key:
-        try:
-            from supabase import create_client
-            supabase = create_client(config.supabase_url, config.supabase_key)
-            response = supabase.table("subscribers").select("id, email").eq("is_active", True).execute()
-            subscribers = response.data
-            if subscribers:
-                return subscribers
-            print("[Supabase] No active subscribers found in database.")
-        except Exception as e:
-            print(f"[Supabase] Error fetching subscribers: {e}. Falling back to config recipient.")
-    
-    # Fallback to config recipient
-    return [{"id": None, "email": config.app_config.recipient_email}]
-
-
 def main():
     try:
         sys.stdout.reconfigure(encoding='utf-8')
@@ -119,35 +101,18 @@ def main():
             print("="*50)
             print("Done.")
         else:
+            print("-> Delivering email...")
             if final_briefing and "No new articles found today." not in final_briefing:
-                subscribers = get_subscribers(config)
-                print(f"-> Delivering email to {len(subscribers)} subscriber(s)...")
-                
                 subject = f"The Morning Drop 🌅 - {datetime.date.today().strftime('%b %d, %Y')}"
-                email_sent = False
-                
-                for sub in subscribers:
-                    recipient = sub["email"]
-                    sub_id = sub.get("id")
-                    unsubscribe_link = None
-                    if sub_id and config.supabase_url:
-                        unsubscribe_link = f"{config.supabase_url}/functions/v1/unsubscribe?id={sub_id}"
+                try:
+                    send_email(
+                        sender_email=config.gmail_address,
+                        app_password=config.gmail_app_password,
+                        recipient_email=config.app_config.recipient_email,
+                        subject=subject,
+                        content=final_briefing
+                    )
                     
-                    try:
-                        send_email(
-                            sender_email=config.gmail_address,
-                            app_password=config.gmail_app_password,
-                            recipient_email=recipient,
-                            subject=subject,
-                            content=final_briefing,
-                            resend_api_key=config.resend_api_key,
-                            unsubscribe_link=unsubscribe_link
-                        )
-                        email_sent = True
-                    except Exception as e:
-                        print(f"[!] Failed to send email to {recipient}: {e}")
-
-                if email_sent:
                     print("-> Updating database with processed articles...")
                     db = NewsDatabase()
                     for article in curated_articles:
@@ -156,12 +121,12 @@ def main():
                     db.prune_old_records(days=30)
                     
                     # Clean up draft file
-                    if os.path.exists(DRAFT_FILE):
-                        os.remove(DRAFT_FILE)
+                    os.remove(DRAFT_FILE)
                     
                     print("Pipeline completed successfully.")
-                else:
-                    print("[!] No emails were successfully delivered.")
+                    
+                except Exception as e:
+                    print(f"Failed to send email: {e}")
             else:
                 print("No new articles to send. Skipping email.")
         return
@@ -198,44 +163,28 @@ def main():
             print("="*50)
             print("Done.")
         else:
+            print("-> Delivering email...")
             if final_briefing and "No new articles found today." not in final_briefing:
-                subscribers = get_subscribers(config)
-                print(f"-> Delivering email to {len(subscribers)} subscriber(s)...")
-                
                 subject = f"The Morning Drop 🌅 - {datetime.date.today().strftime('%b %d, %Y')}"
-                email_sent = False
-                
-                for sub in subscribers:
-                    recipient = sub["email"]
-                    sub_id = sub.get("id")
-                    unsubscribe_link = None
-                    if sub_id and config.supabase_url:
-                        unsubscribe_link = f"{config.supabase_url}/functions/v1/unsubscribe?id={sub_id}"
-                    
-                    try:
-                        send_email(
-                            sender_email=config.gmail_address,
-                            app_password=config.gmail_app_password,
-                            recipient_email=recipient,
-                            subject=subject,
-                            content=final_briefing,
-                            resend_api_key=config.resend_api_key,
-                            unsubscribe_link=unsubscribe_link
-                        )
-                        email_sent = True
-                    except Exception as e:
-                        print(f"[!] Failed to send email to {recipient}: {e}")
+                try:
+                    send_email(
+                        sender_email=config.gmail_address,
+                        app_password=config.gmail_app_password,
+                        recipient_email=config.app_config.recipient_email,
+                        subject=subject,
+                        content=final_briefing
+                    )
 
-                if email_sent:
                     print("-> Updating database with processed articles...")
                     db = NewsDatabase()
                     for article in state["curated_articles"]:
                         db.mark_processed(article["link"], article["domain"])
-                    
+
                     db.prune_old_records(days=30)
                     print("Auto pipeline completed successfully.")
-                else:
-                    print("[!] No emails were successfully delivered.")
+
+                except Exception as e:
+                    print(f"Failed to send email: {e}")
                     sys.exit(1)
             else:
                 print("No new articles to send. Skipping email.")
