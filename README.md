@@ -72,11 +72,12 @@ To ensure high curation quality, 100% uptime, and cost-free execution, the pipel
 
 #### 1. Cloud Engine (OpenRouter)
 Queries models in this preferred order:
-* **DeepSeek-V3** (`deepseek/deepseek-chat`) — Primary high-performance curator
-* **Llama 3.3 70B & Llama 3 8B** (`meta-llama/llama-3.3-70b-instruct:free`, `meta-llama/llama-3-8b-instruct:free`) — Extremely conversational and robust
-* **GPT-OSS-120B** (`openai/gpt-oss-120b:free`) — High-reasoning open-weights model
-* **Google Gemma 4 31B** (`google/gemma-4-31b-it:free`) — State-of-the-art reasoning model
-* **Fallback Cluster** — `gemini-flash-1.5`, `gemini-pro-1.5`, and `mistral-7b-instruct:free`
+* **NVIDIA Nemotron Series** (`nvidia/nemotron-3-nano-30b-a3b:free`, `nvidia/nemotron-nano-9b-v2:free`, `nvidia/nemotron-3-super:free`) — High-throughput open reasoning models
+* **Poolside Laguna S 2.1** (`poolside/laguna-s-2.1:free`) — High-performance coding and agentic model
+* **OpenAI GPT-OSS 20B** (`openai/gpt-oss-20b:free`) — Fast open-weights reasoning model
+* **Google Gemma 4 26B** (`google/gemma-4-26b-a4b:free`) — Multimodal instruction-tuned MoE
+* **Cohere North Mini Code** (`cohere/north-mini-code:free`) — Low-latency agentic model
+* **Fallback Cluster** — `google/gemini-2.5-flash`
 
 #### 2. Local Backup Engine (Ollama)
 If OpenRouter hits rate limits (429 errors), lacks credit, or if `OPENROUTER_API_KEY` is not provided in `.env`, the system automatically shifts execution to local Ollama models:
