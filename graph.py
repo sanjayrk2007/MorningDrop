@@ -74,25 +74,17 @@ def curation_node(state: GraphState) -> Dict[str, Any]:
     active_models = []
     if config.openrouter_api_key:
         active_models.extend([
-            # Free DeepSeek and Nvidia Nemotron Models (Preferred First)
-            "deepseek/deepseek-r1:free",
-            "nvidia/llama-3.1-nemotron-70b-instruct:free",
-            # Other Free OpenRouter models
-            "meta-llama/llama-3.3-70b-instruct:free",
-            "meta-llama/llama-3-8b-instruct:free",
-            "openai/gpt-oss-120b:free",
-            "google/gemma-4-31b-it:free",
-            "mistralai/mistral-7b-instruct:free",
+            "nvidia/nemotron-3-nano-30b-a3b:free",
+            "nvidia/nemotron-nano-9b-v2:free",
+            "nvidia/nemotron-3-super:free",
+            "poolside/laguna-s-2.1:free",
+            "openai/gpt-oss-20b:free",
+            "google/gemma-4-26b-a4b:free",
+            "cohere/north-mini-code:free",
         ])
     if config.google_api_key:
         active_models.extend([
-            "google/gemini-2.0-flash",
-            "google/gemini-1.5-flash",
-            "google/gemini-1.5-pro",
-        ])
-    if config.openrouter_api_key:
-        active_models.extend([
-            "deepseek/deepseek-chat",
+            "google/gemini-2.5-flash",
         ])
 
 
@@ -354,25 +346,17 @@ def analyze_and_narrate_node(state: GraphState) -> Dict[str, Any]:
     active_models = []
     if config.openrouter_api_key:
         active_models.extend([
-            # Free DeepSeek and Nvidia Nemotron Models (Preferred First)
-            "deepseek/deepseek-r1:free",
-            "nvidia/llama-3.1-nemotron-70b-instruct:free",
-            # Other Free OpenRouter models
-            "meta-llama/llama-3.3-70b-instruct:free",
-            "meta-llama/llama-3-8b-instruct:free",
-            "openai/gpt-oss-120b:free",
-            "google/gemma-4-31b-it:free",
-            "mistralai/mistral-7b-instruct:free",
+            "nvidia/nemotron-3-nano-30b-a3b:free",
+            "nvidia/nemotron-nano-9b-v2:free",
+            "nvidia/nemotron-3-super:free",
+            "poolside/laguna-s-2.1:free",
+            "openai/gpt-oss-20b:free",
+            "google/gemma-4-26b-a4b:free",
+            "cohere/north-mini-code:free",
         ])
     if config.google_api_key:
         active_models.extend([
-            "google/gemini-2.0-flash",
-            "google/gemini-1.5-flash",
-            "google/gemini-1.5-pro",
-        ])
-    if config.openrouter_api_key:
-        active_models.extend([
-            "deepseek/deepseek-chat",
+            "google/gemini-2.5-flash",
         ])
 
 
